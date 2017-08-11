@@ -1,7 +1,7 @@
 import feedparser
 import re
 
-terms = ["nintendo"]
+terms = ["nintendo", "microsoft"]
 entries = []
 allentries = []
 
@@ -26,7 +26,11 @@ for term in terms:
         allentries.append(entries)
         entries = []
 
+allentries.sort(key=lambda x: x[1], reverse=True)  # Sorts by time
 for x in range(len(allentries)-1, -1, -1):
     for y in range(0, len(allentries[x])):
-        print allentries[x][y]
+        try:
+            print allentries[x][y]
+        except UnicodeEncodeError:
+            break  # I don't think passing these posts over is a problem
     print ""
