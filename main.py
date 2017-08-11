@@ -1,25 +1,32 @@
 import feedparser
+import re
 
 terms = ["nintendo"]
+entries = []
+allentries = []
 
 for term in terms:
     craigslist_search_url = "https://cincinnati.craigslist.org/search/sss?format=rss&query=" + term
     rssfeed = feedparser.parse( craigslist_search_url )
     for x in rssfeed["entries"]:
-    #    print x
         for y in x:
             if y == "summary" or y == "link":
-    #            print "TITLE: " + y
-                print x[y]
+                clean = re.sub('<a class=.*?</a>', '[Contact Info]',
+                               x[y])
+                entries.append(clean)
             elif y == "title":
                 posttitle = x[y]
-                print posttitle.replace('&#x0024;', '- Price: ')
+                entries.append(posttitle.replace('&#x0024;',
+                                                 '- Price: '))
             elif y == "updated":
                 posttitle = x[y]
                 posttitle = posttitle.replace('T', ' - ')
                 posttitle = posttitle.replace('-05:00', '')
-                print posttitle
-        print ""
+                entries.append(posttitle)
+        allentries.append(entries)
+        entries = []
 
-
-# This program just shoves all the listings on top of each other, I need to make them sort by time
+for x in range(len(allentries)-1, -1, -1):
+    for y in range(0, len(allentries[x])):
+        print allentries[x][y]
+    print ""
